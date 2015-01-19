@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from PyQt4 import QtGui, QtCore
 from PyQt4.QtGui import QMainWindow, QWidget, QApplication
 import sys, os
@@ -10,11 +11,14 @@ class Capture():
 
 
     def commandCapture(self, duree, photoSec):
-        self.nbPhoto = duree // photoSec
-        self.photoSec = photoSec
-        self.commande = 'streamer -s 1280x720 -t bbb -r aaa -o image0000.jpeg -c /dev/video0'
+        
+        self.photoSec = 1/float(photoSec)
+	self.nbPhoto = duree // photoSec
+        self.commande = 'streamer -t bbb -r aaa -o image00000.jpeg -s 640x480'
         self.commande = self.commande.replace('aaa', str(self.photoSec))
         self.commande = self.commande.replace('bbb', str(self.nbPhoto))
+
+	print(self.commande)
         
         os.system(self.commande)
         
@@ -47,9 +51,8 @@ class QTWindow(QtGui.QWidget):
         #buttonCapt.setAutoDefault(self,True)
         buttonCapt.setDefault(True)
         
-        labelDuree = QtGui.QLabel("Duree : ")
-        labelPhotoSec = QtGui.QLabel("Seconde par photo : ")
-        labelDelay = QtGui.QLabel("Debuter dans : ")
+        labelDuree = QtGui.QLabel("Durree : ")
+        labelPhotoSec = QtGui.QLabel("Intervale : ")
 
         self.comboBoxDuree = QtGui.QComboBox()
         self.comboBoxPhotoSec = QtGui.QComboBox();
@@ -57,9 +60,9 @@ class QTWindow(QtGui.QWidget):
 
         self.dictBoxDuree = OrderedDict([
                         ("20 secondes", 20),
-                        ("1 jour", 24),
+                        ("1 jour", 86400),
                         ("2 jour", 172800),
-                        ("1 heure", 86400),
+                        ("1 heure", 3600),
                         ("2 heures", 7200),
                         ("3 heures", 10800),
                         ("4 heures", 14400),
@@ -95,20 +98,17 @@ class QTWindow(QtGui.QWidget):
 
         self.grid = QtGui.QGridLayout()
         
-        self.grid.addWidget(buttonCapt, 1, 1, 1, 3)
+        self.grid.addWidget(buttonCapt, 1, 4, 1, 5)
 
-        self.grid.addWidget(self.labelPix, 2, 0, 4, 5, QtCore.Qt.AlignHCenter)
+        self.grid.addWidget(self.labelPix, 1, 0, 4, 4, QtCore.Qt.AlignHCenter)
 
-        self.grid.addWidget(labelDuree, 7, 1, QtCore.Qt.AlignHCenter)
-        self.grid.addWidget(self.comboBoxDuree, 8, 1)
+        self.grid.addWidget(labelDuree, 2, 4, QtCore.Qt.AlignHCenter)
+        self.grid.addWidget(self.comboBoxDuree, 2, 5)
 
-        self.grid.addWidget(labelPhotoSec, 7, 3, QtCore.Qt.AlignHCenter)
-        self.grid.addWidget(self.comboBoxPhotoSec, 8, 3)
+        self.grid.addWidget(labelPhotoSec, 3, 4, QtCore.Qt.AlignHCenter)
+        self.grid.addWidget(self.comboBoxPhotoSec, 3, 5)
 
-        #self.grid.addWidget(labelDelay, 6, 2, QtCore.Qt.AlignHCenter)
-        #self.grid.addWidget(self.comboBoxDelay, 7, 2)
-
-        self.grid.addWidget(buttonStart, 9, 1, 9, 3)
+        self.grid.addWidget(buttonStart, 4, 4, 4, 5)
 
 
         self.setLayout(self.grid)
@@ -125,13 +125,13 @@ class QTWindow(QtGui.QWidget):
         self.show()
     
     def capture(self):
-        os.system("streamer -f jpeg -o image.jpeg -s 1280x720")
+        os.system("streamer -f jpeg -o image.jpeg -s 426x320")
         return "image.jpeg"
         
     def newFolder(self):
         folderName = datetime.now().strftime("%d-%m-%Y_%H-%M-%S")
-        os.system("mkdir ~/Bureau/" + folderName)
-        os.chdir("/home/bhacaz/Bureau/" + folderName)
+        os.system("mkdir ~/Desktop/" + folderName)
+        os.chdir("~/Desktop")
         
 def main():
     app = QtGui.QApplication(sys.argv)
